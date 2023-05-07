@@ -1,17 +1,15 @@
 import cliProgress from 'cli-progress'
-import createLogger from 'progress-estimator'
 import youtubedl from 'youtube-dl-exec'
-import fs from 'fs'
 import stream from 'stream'
 
-const POKEMON_VIDEO = 'https://www.youtube.com/watch?v=-PlAg8R9TG4'
+const POKEMON_VIDEO = 'https://youtu.be/gutR_LNoZw0'
 const SNOW_VIDEO = 'https://youtu.be/ADDFmfOeihU'
 const REGEX = /^.*?(\d{1,3})(?=\s|%).*$/i
 
 async function getVideo() {
+  let prevProgressNum = 0
   const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
   progressBar.start(100, 0)
-  const logger = createLogger()
   const promise = youtubedl.exec(POKEMON_VIDEO, {
     writeInfoJson: true,
   })
@@ -23,18 +21,14 @@ async function getVideo() {
     try {
       const output = stdoutStream.read().toString()
       if (output) {
-        const str = output.split(' ')
-        if (str) {
-          console.log({
-            v: str[1],
-            s: str[1].slice(0, -1),
-            n: Number(str[1].slice(0, -1))
-          })
-          const num = Number(str[1].slice(0, -1))
-          console.log({ num })
-          if (Number.isInteger(num)) {
-            progressBar.update(Math.round(num))
-          }
+        const match = output.match(/\b(\d{1,2}(?:\.\d{1,2})?)%/);
+        const percentage = match ? match[1] : null;
+        if (percentage) {
+            const num = Number(percentage)
+            if (Number.isInteger(num) && num > prevProgressNum) {
+              progressBar.update(Math.round(num))
+              prevProgressNum = num
+            }
         }
       }
     } catch(err) {
@@ -42,8 +36,19 @@ async function getVideo() {
     }
   })
 
-  //const result = await logger(promise, `Downloading the video`)
-  // console.log(result)
+  await endDownload(promise)
+
+  progressBar.update(100)
+  progressBar.stop()
 }
+
+async function endDownload(promise: any) {
+  return new Promise((resolve, reject) => {
+    promise
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
 
 getVideo()
