@@ -1,54 +1,77 @@
-import cliProgress from 'cli-progress'
-import youtubedl from 'youtube-dl-exec'
-import stream from 'stream'
+import * as dotenv from 'dotenv'
+import prompts from 'prompts'
+import { getPrompt } from './chatgtp'
+import { createAudio } from './text-to-speech'
+import { getVideo } from './youtube'
 
-const POKEMON_VIDEO = 'https://youtu.be/gutR_LNoZw0'
-const SNOW_VIDEO = 'https://youtu.be/ADDFmfOeihU'
-const REGEX = /^.*?(\d{1,3})(?=\s|%).*$/i
+dotenv.config()
 
-async function getVideo() {
-  let prevProgressNum = 0
-  const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-  progressBar.start(100, 0)
-  const promise = youtubedl.exec(POKEMON_VIDEO, {
-    writeInfoJson: true,
-  })
+const youtubePrompt = async () => {
+  const response = await prompts([
+    {
+      type: 'text',
+      name: 'url',
+      message: 'URL do video',
+    },
+    {
+      type: 'text',
+      name: 'name',
+      message: 'Nome do arquivo (Opcional)',
+    },
+    {
+      type: 'text',
+      name: 'folder',
+      message: 'Pasta para salvar o video',
+      initial: 'nature'
+    },
+  ])
 
-  const stdoutStream = new stream.PassThrough();
-
-  promise?.stdout?.pipe(stdoutStream)
-  promise?.stdout?.on('data', () => {
-    try {
-      const output = stdoutStream.read().toString()
-      if (output) {
-        const match = output.match(/\b(\d{1,2}(?:\.\d{1,2})?)%/);
-        const percentage = match ? match[1] : null;
-        if (percentage) {
-            const num = Number(percentage)
-            if (Number.isInteger(num) && num > prevProgressNum) {
-              progressBar.update(Math.round(num))
-              prevProgressNum = num
-            }
-        }
-      }
-    } catch(err) {
-      console.error(err)
-    }
-  })
-
-  await endDownload(promise)
-
-  progressBar.update(100)
-  progressBar.stop()
+  const x = await getVideo(response)
+  console.log(x)
 }
 
-async function endDownload(promise: any) {
-  return new Promise((resolve, reject) => {
-    promise
-      .then(resolve)
-      .catch(reject)
-  })
+const createVideosPrompt = async () => {
+  const response = await prompts([
+    // {
+    //   type: 'number',
+    //   name: 'quantity',
+    //   message: 'Quantidade de videos',
+    // },
+    {
+      type: 'text',
+      name: 'theme',
+      message: 'Tema para criar os videos',
+    },
+  ])
+
+  const prompt = await getPrompt(response.theme)
+
+  createAudio(prompt.title)
+
+  return null
+
 }
 
+(async () => {
+  const response = await prompts({
+    type: 'select',
+    name: 'option',
+    message: 'O que você gostaria de fazer?',
+    choices: [
+      { title: 'Youtube', description: 'Baixar um novo video do youtube', value: 'youtube' },
+      { title: 'Criar Videos', description: 'Criar novos videos', value: 'createVideo' },
+    ]
+  })
 
-getVideo()
+  switch (response.option) {
+    case 'youtube':
+      await youtubePrompt()
+      break;
+    case 'createVideo':
+      await createVideosPrompt()
+      break;
+    default:
+      break;
+  }
+  
+})()
