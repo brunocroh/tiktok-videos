@@ -25,6 +25,7 @@
     "execa": "^7.1.1",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
+    "mp3-duration": "^1.1.0",
     "nodemon": "^2.0.22",
     "openai": "^3.2.1",
     "progress-estimator": "^0.3.1",

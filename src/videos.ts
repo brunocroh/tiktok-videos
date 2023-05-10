@@ -2,10 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import { createAudio } from './lib/text-to-speech';
 import { getPrompt } from './lib/chatgpt';
+import { createVideo as ffmpegCreateVideo } from './lib/ffmpeg';
 
 export async function createVideo(theme: string) {
   const folder = createFolder();
-  let lines = [];
+  let lines: any = [];
   const prompt = await getPrompt(theme);
 
   if (!prompt) throw new Error('Chatgpt not generated right prompt');
@@ -14,9 +15,28 @@ export async function createVideo(theme: string) {
 
   lines.push(prompt.title);
   lines = lines.concat(prompt.texts);
+  let startTime = 0;
 
-  lines.map((l: string, i: number) => {
-    createAudio(l, `${folder}/tmp/${i}`);
+  const audios = await Promise.all(
+    lines.map(async (l: string, i: number) => {
+      const audio = await createAudio(l, `${folder}/tmp/${i}`);
+      const st = startTime;
+      startTime = startTime + audio.duration + 2;
+      return {
+        ...audio,
+        text: l,
+        startTime: st,
+      };
+    })
+  );
+
+  const duration = audios.reduce((agg, audio) => agg + audio.duration, 0);
+
+  console.log(audios);
+
+  ffmpegCreateVideo({
+    audios,
+    duration,
   });
 }
 

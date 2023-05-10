@@ -1,13 +1,14 @@
 import textoToSpeech from '@google-cloud/text-to-speech';
 import fs from 'fs';
 import util from 'util';
+const mp3Duration = require('mp3-duration');
 
 const client = new textoToSpeech.TextToSpeechClient();
 
 export async function createAudio(text: string, filename: string) {
   const [response] = await client.synthesizeSpeech({
     input: {
-      text,
+      ssml: `<speak>${text}<break time='2000ms'/>`,
     },
     voice: {
       languageCode: 'pt-BR',
@@ -25,4 +26,16 @@ export async function createAudio(text: string, filename: string) {
     response.audioContent || 'string',
     'binary'
   );
+
+  const duration = await getAudioDuration(`${filename}.mp3`);
+
+  return {
+    filename,
+    duration,
+  };
+}
+
+async function getAudioDuration(filename: string): Promise<number> {
+  util.promisify(mp3Duration);
+  return mp3Duration(filename);
 }

@@ -65,11 +65,6 @@ const createVideosPrompt = async () => {
         description: 'Criar novos videos',
         value: 'createVideo',
       },
-      {
-        title: 'IGAO GUEI',
-        description: 'teste ffmpeg',
-        value: 'teste',
-      },
     ],
   });
 
@@ -79,9 +74,6 @@ const createVideosPrompt = async () => {
       break;
     case 'createVideo':
       await createVideosPrompt();
-      break;
-    case 'teste':
-      await ffCreateVideo({ duration: 60 });
       break;
     default:
       break;
