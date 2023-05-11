@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import { createAudio } from './lib/text-to-speech';
-import { getPrompt } from './lib/chatgpt';
 import { createVideo as ffmpegCreateVideo } from './lib/ffmpeg';
+import { getPrompt } from './lib/chatgpt';
 
 export async function createVideo(theme: string) {
   const folder = createFolder();
@@ -31,8 +31,6 @@ export async function createVideo(theme: string) {
   );
 
   const duration = audios.reduce((agg, audio) => agg + audio.duration, 0);
-
-  console.log(audios);
 
   ffmpegCreateVideo({
     audios,
