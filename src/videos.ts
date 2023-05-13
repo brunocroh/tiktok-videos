@@ -3,6 +3,7 @@ import fs from 'fs';
 import { createAudio } from './lib/text-to-speech';
 import { createVideo as ffmpegCreateVideo } from './lib/ffmpeg';
 import { getPrompt } from './lib/chatgpt';
+import createImageText from './lib/canva';
 
 export async function createVideo(theme: string) {
   const folder = createFolder();
@@ -11,24 +12,32 @@ export async function createVideo(theme: string) {
 
   if (!prompt) throw new Error('Chatgpt not generated right prompt');
 
-  console.log({ prompt });
-
   lines.push(prompt.title);
   lines = lines.concat(prompt.texts);
-  let startTime = 0;
+  let startTime = 1;
 
-  const audios = await Promise.all(
+  let audios = await Promise.all(
     lines.map(async (l: string, i: number) => {
+      const image = createImageText(l, `${folder}/tmp/${i}`);
       const audio = await createAudio(l, `${folder}/tmp/${i}`);
-      const st = startTime;
-      startTime = startTime + audio.duration + 2;
       return {
         ...audio,
         text: l,
-        startTime: st,
+        image,
+        i,
       };
     })
   );
+
+  audios = audios.map((a: any) => {
+    const st = startTime;
+    startTime = Math.ceil(startTime + a.duration);
+
+    return {
+      ...a,
+      startTime: st,
+    };
+  });
 
   const duration = audios.reduce((agg, audio) => agg + audio.duration, 0);
 

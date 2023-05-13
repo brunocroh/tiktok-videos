@@ -18,7 +18,7 @@ function renderTemplate(prompt: string) {
     O tema dos videos vão ser ${prompt}.
 
     A estrutura do roteiro é um Titulo que gere engajamento e seja curto.
-    e em seguida 6 textos bem curtos.
+    e em seguida 10 textos bem curtos.
 
     retorne a resposta como um JSON, tendo os campos title e texts, texts sendo um array.
   `;

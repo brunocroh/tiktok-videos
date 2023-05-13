@@ -3,13 +3,15 @@ import ffmpeg, { FfmpegCommand, FfprobeData } from 'fluent-ffmpeg';
 
 const CWD = process.cwd();
 
+type Audio = {
+  filename: string;
+  duration: number;
+  startTime: number;
+  text: string;
+};
+
 type CreateVideoProps = {
-  audios: {
-    filename: string;
-    duration: number;
-    startTime: number;
-    text: string;
-  }[];
+  audios: Audio[];
   duration: number;
 };
 
@@ -23,67 +25,82 @@ async function getMetadata(video: string): Promise<FfprobeData> {
 }
 
 export async function createVideo(props: CreateVideoProps) {
+  const { audios } = props;
+  const file = await createVideoBase({ ...props, audios });
+
+  let _video = ffmpeg(file);
+  _video = audios.reduce((v, a: Audio) => {
+    return v.input(`${a.filename}.png`);
+  }, _video);
+
+  _video
+    .complexFilter(
+      audios.map((audio: Audio, i: number) => ({
+        filter: 'overlay',
+        scale: '1:1',
+        inputs: `${!i ? '[0:v]' : '[tmp]'}[${i + 1}:v]`,
+        outputs: 'tmp',
+        options: {
+          enable: `between(t, ${audio.startTime}, ${
+            audio.startTime + audio.duration
+          })`,
+        },
+      })),
+      'tmp'
+    )
+    .on('end', () => {
+      console.log('terminou tudo');
+    })
+    .outputOptions(['-map 0:a'])
+    .output(`${CWD}/output/teste-final.mp4`)
+    .run();
+
+  return _video;
+}
+
+async function createVideoBase(props: CreateVideoProps): Promise<string> {
   const { duration, audios } = props;
   const video = `${CWD}/videos/nature/earth.mp4`;
-  try {
-    const metadata = await getMetadata(video);
 
-    if (!metadata.format.duration)
-      throw new Error(`Fail to get metadata of video: ${video}`);
-    const startTime = getRandomInt(0, metadata.format.duration - duration);
-    const { width, height } = metadata.streams[0];
+  const metadata = await getMetadata(video);
 
-    if (!width || !height)
-      throw new Error('width or height not exists on metadata of video');
+  if (!metadata.format.duration)
+    throw new Error(`Fail to get metadata of video: ${video}`);
+  const startTime = getRandomInt(0, metadata.format.duration - duration);
+  const { width, height } = metadata.streams[0];
 
-    const x = width - (1080 / 1920) * height;
+  if (!width || !height)
+    throw new Error('width or height not exists on metadata of video');
 
-    const audioFilename = await concatAudioFiles(audios);
+  const x = width - (1080 / 1920) * height;
 
-    const stagingVideo = ffmpeg(video)
-      .inputOption(`-ss ${startTime}`)
-      .inputOption(`-t ${duration}`)
-      .audioFilters([
-        {
-          filter: 'volume',
-          options: {
-            volume: 0.3,
+  const audioFilename = await concatAudioFiles(audios);
+  return new Promise((resolve, reject) => {
+    try {
+      const stagingVideo = ffmpeg(video)
+        .inputOption(`-ss ${startTime}`)
+        .inputOption(`-t ${duration}`)
+        .audioFilters([
+          {
+            filter: 'volume',
+            options: {
+              volume: 0.3,
+            },
           },
-        },
-      ])
-      .addInput(audioFilename)
-      .addOptions(['-map 0:v', '-map 1:a'])
-      .videoFilters([`crop=${width - x}:${height}`])
-      .size(`${width}x${height}`)
-      .videoFilters(
-        audios.map((audio: any) => ({
-          filter: 'drawtext',
-          options: {
-            fontfile: 'Lucida Grande.ttf',
-            text: audio.text,
-            enable: `between(t, ${audio.startTime}, ${
-              audio.startTime + audio.duration
-            })`,
-            fontsize: 48,
-            fontcolor: 'yellow',
-            x: '(main_w/2-text_w/2)',
-            y: 50,
-            shadowcolor: 'black',
-            shadowx: 2,
-            shadowy: 2,
-          },
-        }))
-      )
-      .on('end', () => {
-        console.log('terminou papai');
-      })
-      .on('stderr', (e) => console.log(e))
-      .saveToFile(`${CWD}/output/teste.mp4`);
-
-    return stagingVideo;
-  } catch (error) {
-    console.log(error);
-  }
+        ])
+        .addInput(audioFilename)
+        .addOptions(['-map 0:v', '-map 1:a'])
+        .videoFilters([`crop=${width - x}:${height}`])
+        // .size(`${width}x${height}`)
+        .on('end', () => {
+          resolve(`${CWD}/output/teste.mp4`);
+        })
+        .saveToFile(`${CWD}/output/teste.mp4`);
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
 }
 
 function concatAudioFiles(audios: any): Promise<string> {

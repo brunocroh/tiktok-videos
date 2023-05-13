@@ -3,6 +3,7 @@ import prompts from 'prompts';
 import { createVideo } from './videos';
 import { getVideo } from './lib/youtube';
 import { createVideo as ffCreateVideo } from './lib/ffmpeg';
+import createImageText from './lib/canva';
 
 dotenv.config();
 
@@ -65,6 +66,11 @@ const createVideosPrompt = async () => {
         description: 'Criar novos videos',
         value: 'createVideo',
       },
+      {
+        title: 'debug',
+        description: 'Debug',
+        value: 'debug',
+      },
     ],
   });
 
@@ -74,6 +80,12 @@ const createVideosPrompt = async () => {
       break;
     case 'createVideo':
       await createVideosPrompt();
+      break;
+    case 'debug':
+      await createImageText(
+        'Elimine as distrações, como redes sociais e notificações do celula',
+        './teste'
+      );
       break;
     default:
       break;
