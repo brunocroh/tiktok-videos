@@ -13,12 +13,12 @@ const openai = new OpenAIApi(configuration);
 
 function renderTemplate(prompt: string) {
   return `
-    Cria para mim um roteiro de video bem simples e curto.
+    Cria para mim um roteiro de video curto, com duração de um pouco mais de 1 minuto.
 
-    O tema dos videos vão ser ${prompt}.
+    O tema dos videos vão ser ${prompt}. 
 
     A estrutura do roteiro é um Titulo que gere engajamento e seja curto.
-    e em seguida 10 textos bem curtos.
+    e em seguida 10 frases. 
 
     retorne a resposta como um JSON, tendo os campos title e texts, texts sendo um array.
   `;

@@ -1,21 +1,23 @@
 import fs from 'fs';
+import wrap from 'word-wrap';
 const { createCanvas } = require('canvas');
 
 export default function createImageText(str: string, filename: string) {
-  const width = 720;
-  const height = 1280;
+  const width = 405;
+  const height = 720;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  ctx.font = '36px Impact';
+  ctx.font = '32px Impact';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#FFA400';
   ctx.strokeStyle = 'black';
 
   const text = formatTitle(str);
   text.forEach((line, i) => {
-    ctx.fillText(line, 0, 180 + 60 * i);
-    ctx.strokeText(line, 0, 180 + 60 * i);
+    const p = [line, width / 2, 120 + 50 * i];
+    ctx.fillText(...p);
+    ctx.strokeText(...p);
   });
 
   const buffer = canvas.toBuffer();
@@ -24,10 +26,11 @@ export default function createImageText(str: string, filename: string) {
   return `${filename}.png`;
 }
 
-function getMaxNextLine(input: string, maxChars = 40) {
+function getMaxNextLine(input: string, maxChars = 25) {
   const allWords = input.split(' ');
   const lineIndex: any = allWords.reduce(
     (prev: any, cur: any, index: number) => {
+      console.log({ prev });
       if (prev?.done) return prev;
       const endLastWord = prev?.position || 0;
       const position = endLastWord + 1 + cur.length;
@@ -40,13 +43,5 @@ function getMaxNextLine(input: string, maxChars = 40) {
 }
 
 function formatTitle(title: string) {
-  const output = [];
-  let stagingText = title;
-
-  for (let i = 0; i <= Math.ceil(title.length / 40) + 1; i++) {
-    const text = getMaxNextLine(stagingText);
-    output.push(text.line);
-    stagingText = text.remainingChars;
-  }
-  return output;
+  return wrap(title, { width: 25 }).split('\n');
 }

@@ -14,7 +14,7 @@ export async function getVideo({ url, name, folder }: GetVideo) {
   try {
     const promise = youtubedl.exec(url, {
       output: `./videos/${folder}/${name || '%(title)s'}.%(ext)s`,
-      format: 'mp4',
+      format: 'mp4/bestvideo',
     });
     const result = await progressBar(promise);
   } catch (error) {

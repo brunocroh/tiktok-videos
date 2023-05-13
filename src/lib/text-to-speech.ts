@@ -8,7 +8,13 @@ const client = new textoToSpeech.TextToSpeechClient();
 export async function createAudio(text: string, filename: string) {
   const [response] = await client.synthesizeSpeech({
     input: {
-      ssml: `<break time='1000ms'/><speak>${text}<break time='2000ms'/>`,
+      ssml: `
+  <speak>
+    <break time='500ms'/>
+    ${text}
+    <break time='1200ms'/>
+  </speak>
+`,
     },
     voice: {
       languageCode: 'pt-BR',
@@ -31,7 +37,7 @@ export async function createAudio(text: string, filename: string) {
 
   return {
     filename,
-    duration: Math.ceil(duration),
+    duration,
   };
 }
 

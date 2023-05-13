@@ -73,6 +73,7 @@ async function createVideoBase(props: CreateVideoProps): Promise<string> {
     throw new Error('width or height not exists on metadata of video');
 
   const x = width - (1080 / 1920) * height;
+  console.log({ w: width - x, height });
 
   const audioFilename = await concatAudioFiles(audios);
   return new Promise((resolve, reject) => {
@@ -84,7 +85,7 @@ async function createVideoBase(props: CreateVideoProps): Promise<string> {
           {
             filter: 'volume',
             options: {
-              volume: 0.3,
+              volume: 0.8,
             },
           },
         ])

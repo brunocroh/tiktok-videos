@@ -12,9 +12,11 @@ export async function createVideo(theme: string) {
 
   if (!prompt) throw new Error('Chatgpt not generated right prompt');
 
+  console.log(prompt);
+
   lines.push(prompt.title);
   lines = lines.concat(prompt.texts);
-  let startTime = 1;
+  let startTime = 0;
 
   let audios = await Promise.all(
     lines.map(async (l: string, i: number) => {
@@ -31,10 +33,11 @@ export async function createVideo(theme: string) {
 
   audios = audios.map((a: any) => {
     const st = startTime;
-    startTime = Math.ceil(startTime + a.duration);
+    startTime = Math.floor(startTime + Math.round(a.duration));
 
     return {
       ...a,
+      duration: Math.round(a.duration),
       startTime: st,
     };
   });
