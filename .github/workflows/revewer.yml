@@ -13,7 +13,7 @@ jobs:
         uses: necojackarc/auto-request-review@v0.12.0
         with:
           token: ${{ secrets.TOKEN }} 
-          config: .github/reviwers-devs.yml
+          config: .github/reviwers-dev.yml
   request-review-owner:
     name: Auto Review Request
     runs-on: ubuntu-latest
