@@ -6,4 +6,4 @@ reviewers:
     - BrenoAndrade
 options:
   ignore_draft: true
-  number_of_reviwers: 2
+  number_of_reviewers: 3
