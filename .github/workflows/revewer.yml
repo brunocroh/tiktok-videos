@@ -5,7 +5,7 @@ on:
     types: [opened, ready_for_review, reopened]
 
 jobs: 
-  auto-request-review:
+  request-review-dev:
     name: Auto Review Request
     runs-on: ubuntu-latest
     steps:
@@ -13,4 +13,13 @@ jobs:
         uses: necojackarc/auto-request-review@v0.12.0
         with:
           token: ${{ secrets.TOKEN }} 
-          config: .github/reviwers.yml
+          config: .github/reviwers-devs.yml
+  request-review-owner:
+    name: Auto Review Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request review
+        uses: necojackarc/auto-request-review@v0.12.0
+        with:
+          token: ${{ secrets.TOKEN }} 
+          config: .github/reviwers-owner.yml

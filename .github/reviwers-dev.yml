@@ -1,0 +1,7 @@
+reviewers:
+  defaults: 
+    - IgorHalfeld
+    - YuriSamp
+options:
+  ignore_draft: true
+  number_of_reviewers: 1 
