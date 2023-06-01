@@ -60,7 +60,7 @@ export async function createVideo(props: CreateVideoProps) {
 
 async function createVideoBase(props: CreateVideoProps): Promise<string> {
   const { duration, audios } = props;
-  const video = `${CWD}/videos/nature/earth.mp4`;
+  const video = `${CWD}/videos/city/snowfall.mp4`;
 
   const metadata = await getMetadata(video);
 
