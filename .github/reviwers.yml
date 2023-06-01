@@ -1,0 +1,9 @@
+reviewers:
+  defaults: 
+    - IgorHalfeld
+    - YuriSamp
+    - brunocroh
+    - BrenoAndrade
+options:
+  ignore_draft: true
+  number_of_reviwers: 2
