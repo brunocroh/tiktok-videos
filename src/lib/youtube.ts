@@ -13,6 +13,7 @@ type GetVideo = {
 export async function getVideo({ url, name, folder }: GetVideo) {
   try {
     const promise = youtubedl.exec(url, {
+      rmCacheDir: true,
       output: `./videos/${folder}/${name || '%(title)s'}.%(ext)s`,
       format: 'mp4/bestvideo',
     });
