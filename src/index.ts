@@ -2,7 +2,11 @@ import * as dotenv from 'dotenv';
 import prompts from 'prompts';
 import { createVideo } from './videos';
 import { getVideo } from './lib/youtube';
-import { createVideo as ffCreateVideo, getAudioFromVideo } from './lib/ffmpeg';
+import {
+  convertVideoToMp4,
+  createVideo as ffCreateVideo,
+  getAudioFromVideo,
+} from './lib/ffmpeg';
 import createImageText from './lib/canva';
 
 dotenv.config();
@@ -72,6 +76,11 @@ const createVideosPrompt = async () => {
         value: 'debug',
       },
       {
+        title: 'Converter Video para mp4',
+        description: 'converter video para mp4',
+        value: 'toMp4',
+      },
+      {
         title: 'Extrair Audio',
         description: 'extrair audio de video',
         value: 'audioExtract',
@@ -92,8 +101,11 @@ const createVideosPrompt = async () => {
         './teste'
       );
       break;
+    case 'toMp4':
+      await convertVideoToMp4('videos/gengis.MOV');
+      break;
     case 'audioExtract':
-      await getAudioFromVideo('videos/04.mp4');
+      await getAudioFromVideo('videos/gengis.MOV');
       break;
     default:
       break;

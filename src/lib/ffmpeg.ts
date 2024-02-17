@@ -139,3 +139,21 @@ export async function getAudioFromVideo(fileName: string): Promise<string> {
       .run();
   });
 }
+
+export async function convertVideoToMp4(fileName: string): Promise<string> {
+  return new Promise((res, rej) => {
+    const baseFileName = fileName.split('.')[0];
+    const newFileName = `${baseFileName}.mp4`;
+    console.log({ newFileName });
+    ffmpeg(fileName)
+      .format('mp4')
+      .output(newFileName)
+      .on('error', (error: any) => {
+        rej(error);
+      })
+      .on('end', () => {
+        res(newFileName);
+      })
+      .run();
+  });
+}
