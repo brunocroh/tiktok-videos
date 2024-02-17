@@ -120,3 +120,22 @@ function concatAudioFiles(audios: any): Promise<string> {
       .run();
   });
 }
+
+export async function getAudioFromVideo(fileName: string): Promise<string> {
+  return new Promise((res, rej) => {
+    const baseFileName = fileName.split('.')[0];
+    const newFileName = `${baseFileName}.mp3`;
+    console.log({ newFileName });
+    ffmpeg(fileName)
+      .noVideo()
+      .format('mp3')
+      .output(newFileName)
+      .on('error', (error: any) => {
+        rej(error);
+      })
+      .on('end', () => {
+        res(newFileName);
+      })
+      .run();
+  });
+}

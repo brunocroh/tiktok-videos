@@ -45,8 +45,8 @@ export async function getPrompt(
     const choice = result?.data.choices[0];
 
     if (choice && choice.message) {
-      const text = choice.message.content.replace(/\n/g, '');
-      return JSON.parse(text);
+      const text = choice.message.content?.replace(/\n/g, '');
+      return JSON.parse(text!);
     }
   } catch (error: any) {
     console.log(error);

@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import prompts from 'prompts';
 import { createVideo } from './videos';
 import { getVideo } from './lib/youtube';
-import { createVideo as ffCreateVideo } from './lib/ffmpeg';
+import { createVideo as ffCreateVideo, getAudioFromVideo } from './lib/ffmpeg';
 import createImageText from './lib/canva';
 
 dotenv.config();
@@ -71,6 +71,11 @@ const createVideosPrompt = async () => {
         description: 'Debug',
         value: 'debug',
       },
+      {
+        title: 'Extrair Audio',
+        description: 'extrair audio de video',
+        value: 'audioExtract',
+      },
     ],
   });
 
@@ -86,6 +91,9 @@ const createVideosPrompt = async () => {
         'Elimine as distrações, como redes sociais e notificações do celula',
         './teste'
       );
+      break;
+    case 'audioExtract':
+      await getAudioFromVideo('videos/04.mp4');
       break;
     default:
       break;
