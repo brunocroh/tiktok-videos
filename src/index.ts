@@ -102,10 +102,10 @@ const createVideosPrompt = async () => {
       );
       break;
     case 'toMp4':
-      await convertVideoToMp4('videos/gengis.MOV');
+      await convertVideoToMp4('videos/04.mp4');
       break;
     case 'audioExtract':
-      await getAudioFromVideo('videos/gengis.MOV');
+      await getAudioFromVideo('videos/04.mp4');
       break;
     default:
       break;

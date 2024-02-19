@@ -1,7 +1,7 @@
 import textoToSpeech from '@google-cloud/text-to-speech';
 import fs from 'fs';
 import util from 'util';
-const mp3Duration = require('mp3-duration');
+import mp3Duration from 'mp3-duration';
 
 const client = new textoToSpeech.TextToSpeechClient();
 

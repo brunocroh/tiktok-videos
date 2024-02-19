@@ -1,9 +1,6 @@
 import youtubedl from 'youtube-dl-exec';
 import { progressBar } from './progressBar';
 
-const POKEMON_VIDEO = 'https://youtu.be/gutR_LNoZw0';
-const SNOW_VIDEO = 'https://youtu.be/ADDFmfOeihU';
-
 type GetVideo = {
   url: string;
   name: string;

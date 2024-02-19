@@ -1,5 +1,6 @@
 import { getRandomInt } from '../utils';
 import ffmpeg, { FfmpegCommand, FfprobeData } from 'fluent-ffmpeg';
+import NotifyMe from '@brunocroh/notify-me';
 
 const CWD = process.cwd();
 
@@ -134,6 +135,7 @@ export async function getAudioFromVideo(fileName: string): Promise<string> {
         rej(error);
       })
       .on('end', () => {
+        NotifyMe.notify('teste', 'hello');
         res(newFileName);
       })
       .run();

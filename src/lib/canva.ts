@@ -1,6 +1,6 @@
 import fs from 'fs';
 import wrap from 'word-wrap';
-const { createCanvas } = require('canvas');
+import { createCanvas } from 'canvas';
 
 export default function createImageText(str: string, filename: string) {
   const width = 405;
