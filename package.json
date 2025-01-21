@@ -39,7 +39,7 @@
     "typescript": "^5.0.4",
     "uuid": "^9.0.0",
     "word-wrap": "^1.2.3",
-    "youtube-dl-exec": "^2.4.1"
+    "youtube-dl-exec": "^3.0.10"
   },
   "devDependencies": {
     "@types/node": "^18.16.6",
